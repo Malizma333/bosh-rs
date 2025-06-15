@@ -1,7 +1,7 @@
 use crate::game::Line;
 use std::collections::HashMap;
 
-#[derive(Eq, PartialEq, Hash, Clone, Copy, Default, Debug)]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Default, Debug)]
 pub struct StoreIndex(usize);
 
 /// A data structure that holds an unordered list of lines, with duplicates.
