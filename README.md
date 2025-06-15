@@ -3,7 +3,7 @@
 
 bosh-rs is a highly configurable physics engine for the game Line Rider.
 
-The official frontend of bosh-rs is [bosh]. The official implementation
+A frontend for bosh-rs can be found at [bosh]. The official implementation
 of Line Rider can be found at [linerider.com].
 
 This project was inspired by [conundrumer/lr-core], although it is structured
@@ -23,7 +23,7 @@ bosh-rs = "0"
 
 # Development / Contributing
 
-If you use Nix (and Flakes), a `flake.nix` is provided so that you can run `nix develop`, which will install the same `rustc` and `cargo`.
+If you use Nix (and Flakes), a `flake.nix` is provided so that you can run `nix develop`, which will always install the correct `rustc` and `cargo`.
 
 # Special Thanks
 
