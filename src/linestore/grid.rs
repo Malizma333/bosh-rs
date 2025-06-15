@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 
 use crate::game::Line;
 use crate::game::Vector2D;
@@ -93,7 +93,7 @@ impl Grid {
     }
 
     fn nearby_line_indices(&self, loc: Vector2D, grid_radius: u8) -> Vec<StoreIndex> {
-        let mut nearby_line_indices: HashSet<StoreIndex> = Default::default();
+        let mut nearby_line_indices: BTreeSet<StoreIndex> = Default::default();
 
         let center = GridIndex::from_location(loc);
 
@@ -106,7 +106,6 @@ impl Grid {
                 grid_index.1 += dy;
 
                 if let Some(store_indices) = self.grid.get(&grid_index).cloned() {
-                    nearby_line_indices.reserve(store_indices.len());
                     for store_index in store_indices {
                         nearby_line_indices.insert(store_index);
                     }
@@ -114,14 +113,11 @@ impl Grid {
             }
         }
 
-        let mut sorted: Vec<StoreIndex> = nearby_line_indices.into_iter().collect();
-        sorted.sort();
-
-        sorted
+        nearby_line_indices.into_iter().collect()
     }
 
-    fn line_indices_in_rectangle(&self, loc1: Vector2D, loc2: Vector2D) -> HashSet<StoreIndex> {
-        let mut nearby_line_indices: HashSet<StoreIndex> = Default::default();
+    fn line_indices_in_rectangle(&self, loc1: Vector2D, loc2: Vector2D) -> Vec<StoreIndex> {
+        let mut nearby_line_indices: BTreeSet<StoreIndex> = Default::default();
 
         let idx1 = GridIndex::from_location(loc1);
         let idx2 = GridIndex::from_location(loc2);
@@ -137,7 +133,7 @@ impl Grid {
             }
         }
 
-        nearby_line_indices
+        nearby_line_indices.into_iter().collect()
     }
 }
 
