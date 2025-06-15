@@ -21,6 +21,10 @@ Add the following to your `Cargo.toml`:
 bosh-rs = "0"
 ```
 
+# Development / Contributing
+
+If you use Nix (and Flakes), a `flake.nix` is provided so that you can run `nix develop`, which will install the same `rustc` and `cargo`.
+
 # Special Thanks
 
  * [Linerider-Advanced][lra] for making physics intuitive to
