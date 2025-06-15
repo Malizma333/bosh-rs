@@ -42,3 +42,4 @@ If you use Nix (and Flakes), a `flake.nix` is provided so that you can run `nix 
 [linerider.com]: https://linerider.com/
 [lra-ce]: https://github.com/RatherBeLunar/LRA-Community-Edition
 [lra]: https://github.com/jealouscloud/linerider-advanced
+[ImHex]: https://imhex.werwolv.net/
