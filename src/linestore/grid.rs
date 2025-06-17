@@ -4,20 +4,20 @@ use crate::game::Line;
 use crate::game::Vector2D;
 use crate::linestore::raw_store::{RawStore, RemoveLineResult, StoreIndex};
 
-const CELL_SIZE: i64 = 20;
-
 /// Data structure used to query lines nearby the rider in
 /// an efficient manner.
-#[derive(Eq, PartialEq, Clone, Default, Debug)]
+#[derive(PartialEq, Clone, Default, Debug)]
 pub struct Grid {
     lines: RawStore,
+    cell_size: f64,
 
     grid: HashMap<GridIndex, Vec<StoreIndex>>,
 }
 
 impl Grid {
-    pub fn new(lines: Vec<Line>) -> Grid {
+    pub fn new(lines: Vec<Line>, cell_size: f64) -> Grid {
         let mut grid: Grid = Default::default();
+        grid.cell_size = cell_size;
         for line in lines {
             grid.add_line(line);
         }
@@ -46,7 +46,7 @@ impl Grid {
     pub fn add_line(&mut self, line: Line) {
         let lines_idx = self.lines.add_line(line);
 
-        for index in GridIndex::iter_over_line(&line) {
+        for index in GridIndex::iter_over_line(&line, self.cell_size) {
             self.grid.entry(index).or_default().push(lines_idx);
         }
     }
@@ -68,7 +68,7 @@ impl Grid {
 
                 // replace instances of line
                 if let Some(line) = self.lines.line_at(to_idx) {
-                    for grid_idx in GridIndex::iter_over_line(line) {
+                    for grid_idx in GridIndex::iter_over_line(line, self.cell_size) {
                         if let Some(idxs) = self.grid.get_mut(&grid_idx) {
                             idxs.iter_mut().for_each(|idx| {
                                 if *idx == from_idx {
@@ -83,7 +83,7 @@ impl Grid {
     }
 
     fn remove_line_for_real(&mut self, line: &Line, replaced_idx: StoreIndex) {
-        for grid_idx in GridIndex::iter_over_line(line) {
+        for grid_idx in GridIndex::iter_over_line(line, self.cell_size) {
             if let Some(idxs) = self.grid.get_mut(&grid_idx) {
                 if let Some(idx_pos) = idxs.iter().position(|idx| *idx == replaced_idx) {
                     idxs.swap_remove(idx_pos);
@@ -93,9 +93,9 @@ impl Grid {
     }
 
     fn nearby_line_indices(&self, loc: Vector2D, grid_radius: u8) -> Vec<StoreIndex> {
-        let mut nearby_line_indices: BTreeSet<StoreIndex> = Default::default();
+        let mut nearby_line_indices: Vec<StoreIndex> = Default::default();
 
-        let center = GridIndex::from_location(loc);
+        let center = GridIndex::from_location(loc, self.cell_size);
 
         let grid_radius = grid_radius as i64;
 
@@ -106,21 +106,21 @@ impl Grid {
                 grid_index.1 += dy;
 
                 if let Some(store_indices) = self.grid.get(&grid_index).cloned() {
-                    for store_index in store_indices {
-                        nearby_line_indices.insert(store_index);
-                    }
+                    nearby_line_indices.extend_from_slice(&store_indices);
                 }
             }
         }
 
-        nearby_line_indices.into_iter().collect()
+        nearby_line_indices.dedup();
+
+        nearby_line_indices
     }
 
     fn line_indices_in_rectangle(&self, loc1: Vector2D, loc2: Vector2D) -> Vec<StoreIndex> {
         let mut nearby_line_indices: BTreeSet<StoreIndex> = Default::default();
 
-        let idx1 = GridIndex::from_location(loc1);
-        let idx2 = GridIndex::from_location(loc2);
+        let idx1 = GridIndex::from_location(loc1, self.cell_size);
+        let idx2 = GridIndex::from_location(loc2, self.cell_size);
 
         for x in i64::min(idx1.0, idx2.0)..=i64::max(idx1.0, idx2.0) {
             for y in i64::min(idx1.1, idx2.1)..=i64::max(idx1.1, idx2.1) {
@@ -141,14 +141,14 @@ impl Grid {
 struct GridIndex(i64, i64);
 
 impl GridIndex {
-    fn from_location(loc: Vector2D) -> GridIndex {
+    fn from_location(loc: Vector2D, cell_size: f64) -> GridIndex {
         GridIndex(
-            (loc.0.floor() as i64).div_euclid(CELL_SIZE),
-            (loc.1.floor() as i64).div_euclid(CELL_SIZE),
+            (loc.0 / cell_size).floor() as i64,
+            (loc.1 / cell_size).floor() as i64,
         )
     }
 
-    fn iter_over_line(line: &Line) -> GridIndexLineIter {
+    fn iter_over_line(line: &Line, cell_size: f64) -> GridIndexLineIter {
         let points = line.ends;
 
         let furthest_left = [points.0.location, points.1.location]
@@ -162,6 +162,7 @@ impl GridIndex {
 
         GridIndexLineIter {
             current_point: furthest_left,
+            cell_size,
             slope,
             traveled: 0.0,
             max_distance,
@@ -173,6 +174,7 @@ impl GridIndex {
 struct GridIndexLineIter {
     current_point: Vector2D,
     slope: f64,
+    cell_size: f64,
 
     traveled: f64,
     max_distance: f64,
@@ -185,18 +187,18 @@ impl Iterator for GridIndexLineIter {
         if self.traveled > self.max_distance {
             None
         } else {
-            let prev_cell = GridIndex::from_location(self.current_point);
+            let prev_cell = GridIndex::from_location(self.current_point, self.cell_size);
 
             let x_until_hit =
-                CELL_SIZE as f64 - f64_rem_floor(self.current_point.0, CELL_SIZE as f64);
+                self.cell_size - f64_rem_floor(self.current_point.0, self.cell_size);
             let y_until_hit = if self.slope >= 0.0 {
-                CELL_SIZE as f64 - f64_rem_floor(self.current_point.1, CELL_SIZE as f64)
+                self.cell_size - f64_rem_floor(self.current_point.1, self.cell_size)
             } else {
-                let result = f64_rem_floor(self.current_point.1, CELL_SIZE as f64);
+                let result = f64_rem_floor(self.current_point.1, self.cell_size);
                 if result != 0.0 {
                     result
                 } else {
-                    CELL_SIZE as f64
+                    self.cell_size
                 }
             };
 

@@ -9,17 +9,19 @@ use crate::rider::{Entity, EntityPoint};
 use crate::{physics, LineBuilder};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Copy)]
 pub struct TrackMeta {
     line_extension_ratio: f64,
     gravity_well_height: f64,
     remount: bool,
+    cell_size: f64,
 }
 
 impl Default for TrackMeta {
     fn default() -> Self {
         TrackMeta {
             line_extension_ratio: 0.25,
+            cell_size: 14.0,
             gravity_well_height: 10.0,
             remount: false,
         }
@@ -38,9 +40,10 @@ pub struct Track {
 
 impl Track {
     pub fn new(starting_positions: Vec<Entity>, lines: Vec<Line>) -> Track {
+        let meta: TrackMeta = Default::default();
         Track {
-            meta: Default::default(),
-            grid: Grid::new(lines),
+            meta,
+            grid: Grid::new(lines, meta.cell_size),
             precomputed_rider_positions: RefCell::new(vec![starting_positions]),
         }
     }
@@ -51,7 +54,7 @@ impl Track {
     ) -> Track {
         Track {
             meta,
-            grid: Grid::new(lines),
+            grid: Grid::new(lines, meta.cell_size),
             precomputed_rider_positions: RefCell::new(vec![starting_positions]),
         }
     }
