@@ -3,7 +3,11 @@ use crate::rider::{Bone, BoneType, Entity, Joint};
 
 /// Returns Some((p1, p2)) for the bone-bounded locations, or None if the bone should break.
 /// Noteworthy that only bones of type Mount are breakable.
-pub fn next_bone_locations(bone: &Bone, entity: &Entity, broken: bool) -> Option<(Vector2D, Vector2D)> {
+pub fn next_bone_locations(
+    bone: &Bone,
+    entity: &Entity,
+    broken: bool,
+) -> Option<(Vector2D, Vector2D)> {
     let p1 = entity.point_at(bone.p1);
     let p2 = entity.point_at(bone.p2);
 

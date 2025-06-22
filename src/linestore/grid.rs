@@ -42,7 +42,8 @@ impl Grid {
                 grid_index.1 += dy;
 
                 if let Some(store_indices) = self.grid.get(&grid_index) {
-                    let lines_in_cell: BTreeSet<&Line> = store_indices.iter()
+                    let lines_in_cell: BTreeSet<&Line> = store_indices
+                        .iter()
                         .map(|line_idx| self.lines.line_at(*line_idx).expect("no line at index"))
                         .collect();
                     result.extend(lines_in_cell);
@@ -184,19 +185,17 @@ impl Iterator for GridIndexLineIter {
         } else {
             let prev_cell = GridIndex::from_location(self.current_point, self.cell_size);
 
-            let x_until_hit =
-                self.cell_size - f64_rem_floor(self.current_point.0, self.cell_size);
-            let y_until_hit =
-                if self.slope >= 0.0 {
-                    self.cell_size - f64_rem_floor(self.current_point.1, self.cell_size)
+            let x_until_hit = self.cell_size - f64_rem_floor(self.current_point.0, self.cell_size);
+            let y_until_hit = if self.slope >= 0.0 {
+                self.cell_size - f64_rem_floor(self.current_point.1, self.cell_size)
+            } else {
+                let result = f64_rem_floor(self.current_point.1, self.cell_size);
+                if result != 0.0 {
+                    result
                 } else {
-                    let result = f64_rem_floor(self.current_point.1, self.cell_size);
-                    if result != 0.0 {
-                        result
-                    } else {
-                        self.cell_size
-                    }
-                };
+                    self.cell_size
+                }
+            };
 
             let x_until_vert_border = x_until_hit;
             let x_until_horiz_border = y_until_hit / self.slope.abs();

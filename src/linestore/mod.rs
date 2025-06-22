@@ -218,7 +218,10 @@ mod tests {
             .point(100.0, 1000.0)
             .build();
 
-        let grid = Grid::new(vec![line1, line2, line3, line4, far_line], DEFAULT_CELL_SIZE);
+        let grid = Grid::new(
+            vec![line1, line2, line3, line4, far_line],
+            DEFAULT_CELL_SIZE,
+        );
 
         let lines = grid.all_lines();
         assert_eq!(lines, &vec![line1, line2, line3, line4, far_line]);
@@ -259,7 +262,12 @@ mod tests {
                 let x = x as f64;
                 let y = y as f64;
                 let diff = Vector2D(x * DEFAULT_CELL_SIZE, y * DEFAULT_CELL_SIZE);
-                lines.push(Line::builder().point_vec(center + diff).point_vec(center + diff + Vector2D(1.0, 1.0)).build());
+                lines.push(
+                    Line::builder()
+                        .point_vec(center + diff)
+                        .point_vec(center + diff + Vector2D(1.0, 1.0))
+                        .build(),
+                );
             }
         }
 
@@ -269,7 +277,12 @@ mod tests {
         lines_rand.swap(5, 0);
         lines_rand.swap(8, 5);
         lines_rand.swap(1, 6);
-        lines_rand.push(Line::builder().point(100.0, 200.0).point(200.0, 200.0).build()); // also add a random line that shouldn't be in the output
+        lines_rand.push(
+            Line::builder()
+                .point(100.0, 200.0)
+                .point(200.0, 200.0)
+                .build(),
+        ); // also add a random line that shouldn't be in the output
         let grid = Grid::new(lines_rand, DEFAULT_CELL_SIZE);
 
         let near = grid.lines_near(Vector2D(0.5, 0.5), 1);
@@ -286,7 +299,13 @@ mod tests {
                 let x = x as f64;
                 let y = y as f64;
                 let diff = Vector2D(x * 0.5, y * 0.5);
-                lines.push(Line::builder().id(id).point_vec(center + diff).point_vec(center + diff + Vector2D(1.0, 1.0)).build());
+                lines.push(
+                    Line::builder()
+                        .id(id)
+                        .point_vec(center + diff)
+                        .point_vec(center + diff + Vector2D(1.0, 1.0))
+                        .build(),
+                );
                 id += 1;
             }
         }
@@ -297,7 +316,12 @@ mod tests {
         lines_rand.swap(5, 0);
         lines_rand.swap(8, 5);
         lines_rand.swap(1, 6);
-        lines_rand.push(Line::builder().point(100.0, 200.0).point(200.0, 200.0).build()); // also add a random line that shouldn't be in the output
+        lines_rand.push(
+            Line::builder()
+                .point(100.0, 200.0)
+                .point(200.0, 200.0)
+                .build(),
+        ); // also add a random line that shouldn't be in the output
         let grid = Grid::new(lines_rand, DEFAULT_CELL_SIZE);
 
         let near = grid.lines_near(Vector2D(0.5, 0.5), 1);
@@ -307,13 +331,11 @@ mod tests {
     #[test]
     fn does_not_infinite_loop_lol() {
         Grid::new(
-            vec![
-                Line::builder()
-                    .point(-1.9499999999999889, 21.950000000000003)
-                    .point(18.05000000000001, 20.700000000000003)
-                    .extended(true)
-                    .build(),
-            ],
+            vec![Line::builder()
+                .point(-1.9499999999999889, 21.950000000000003)
+                .point(18.05000000000001, 20.700000000000003)
+                .extended(true)
+                .build()],
             DEFAULT_CELL_SIZE,
         );
     }
