@@ -8,6 +8,7 @@ use anyhow::{Context, Error};
 use read_from::{LittleEndian, ReadFrom};
 use serde::{Deserialize, Serialize};
 
+// Suggestion: Have Vector2D use a struct with x,y instead of a tuple for clarity
 /// Represents a 2-dimensional vector of floats. Typically used to represent a point
 /// on a track.
 #[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]

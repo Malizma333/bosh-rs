@@ -13,6 +13,7 @@ pub enum PointIndex {
     SledPeg,
     SledTail,
     SledNose,
+    // Suggestion: Naming convention is usually "SledString"
     SledRope,
 }
 

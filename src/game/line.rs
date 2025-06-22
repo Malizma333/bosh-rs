@@ -101,6 +101,7 @@ impl LineBuilder {
         self.line.flipped = flipped;
         self
     }
+    // Suggestion: More explicit documentation/definition for which point is first and which one is second when building lines
     pub fn point(mut self, p1: f64, p2: f64) -> LineBuilder {
         if !self.first_location_init {
             self.line.ends.0.location = Vector2D(p1, p2);

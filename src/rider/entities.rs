@@ -16,6 +16,8 @@ pub struct Entity {
 }
 
 impl Entity {
+    // Suggestion: Return Results to handle unknown entities (eg, whether the rider is separated from the sled) instead of panicking
+
     /// Get a PhysicsPoint at a PointIndex
     pub fn point_at(&self, index: PointIndex) -> &EntityPoint {
         self.points
