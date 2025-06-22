@@ -30,10 +30,29 @@ impl Grid {
     }
 
     pub fn lines_near(&self, loc: Vector2D, grid_radius: u8) -> Vec<&Line> {
-        self.nearby_line_indices(loc, grid_radius)
-            .into_iter()
-            .map(|l| self.lines.line_at(l).expect("no line at index"))
-            .collect()
+        let mut result: Vec<&Line> = vec![];
+
+        let grid_radius = grid_radius as i64;
+
+        let center = GridIndex::from_location(loc, self.cell_size);
+        for dx in -grid_radius..=grid_radius {
+            for dy in -grid_radius..=grid_radius {
+                let mut grid_index = center;
+                grid_index.0 += dx;
+                grid_index.1 += dy;
+
+                if let Some(store_indices) = self.grid.get(&grid_index) {
+                    let lines_in_cell: BTreeSet<&Line> = store_indices.iter()
+                        .map(|line_idx| self.lines.line_at(*line_idx).expect("no line at index"))
+                        .collect();
+                    result.extend(lines_in_cell);
+                }
+            }
+        }
+
+        result.dedup();
+
+        result
     }
 
     pub fn lines_near_box(&self, loc1: Vector2D, loc2: Vector2D) -> Vec<&Line> {
@@ -90,30 +109,6 @@ impl Grid {
                 }
             }
         }
-    }
-
-    fn nearby_line_indices(&self, loc: Vector2D, grid_radius: u8) -> Vec<StoreIndex> {
-        let mut nearby_line_indices: Vec<StoreIndex> = Default::default();
-
-        let center = GridIndex::from_location(loc, self.cell_size);
-
-        let grid_radius = grid_radius as i64;
-
-        for dx in -grid_radius..=grid_radius {
-            for dy in -grid_radius..=grid_radius {
-                let mut grid_index = center;
-                grid_index.0 += dx;
-                grid_index.1 += dy;
-
-                if let Some(store_indices) = self.grid.get(&grid_index).cloned() {
-                    nearby_line_indices.extend_from_slice(&store_indices);
-                }
-            }
-        }
-
-        nearby_line_indices.dedup();
-
-        nearby_line_indices
     }
 
     fn line_indices_in_rectangle(&self, loc1: Vector2D, loc2: Vector2D) -> Vec<StoreIndex> {

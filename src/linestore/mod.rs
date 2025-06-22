@@ -277,6 +277,34 @@ mod tests {
     }
 
     #[test]
+    fn correct_ordering_within_cell() {
+        let mut lines: Vec<Line> = vec![];
+        let center = Vector2D(7.0, 7.0);
+        let mut id = 0;
+        for x in -1..=1 {
+            for y in -1..=1 {
+                let x = x as f64;
+                let y = y as f64;
+                let diff = Vector2D(x * 0.5, y * 0.5);
+                lines.push(Line::builder().id(id).point_vec(center + diff).point_vec(center + diff + Vector2D(1.0, 1.0)).build());
+                id += 1;
+            }
+        }
+
+        // perform some swaps just to make this a bit more unordered without making the test nondeterministic
+        let mut lines_rand = lines.clone();
+        lines_rand.swap(3, 8);
+        lines_rand.swap(5, 0);
+        lines_rand.swap(8, 5);
+        lines_rand.swap(1, 6);
+        lines_rand.push(Line::builder().point(100.0, 200.0).point(200.0, 200.0).build()); // also add a random line that shouldn't be in the output
+        let grid = Grid::new(lines_rand, DEFAULT_CELL_SIZE);
+
+        let near = grid.lines_near(Vector2D(0.5, 0.5), 1);
+        assert_eq!(near, lines.iter().collect::<Vec<_>>());
+    }
+
+    #[test]
     fn does_not_infinite_loop_lol() {
         Grid::new(
             vec![

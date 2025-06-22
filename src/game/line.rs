@@ -26,6 +26,7 @@ pub struct LinePoint {
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Line {
+    pub id: i64,
     pub ends: (LinePoint, LinePoint),
     #[serde(rename = "lineType")]
     pub line_type: LineType,
@@ -34,10 +35,21 @@ pub struct Line {
     #[serde(skip)] // defined in metadata, constant for all lines
     extension_ratio: f64,
 }
+impl PartialOrd for Line {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.id.partial_cmp(&other.id)
+    }
+}
+impl Ord for Line {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.id.cmp(&other.id)
+    }
+}
 
 impl Default for Line {
     fn default() -> Self {
         Line {
+            id: Default::default(),
             ends: (Default::default(), Default::default()),
             line_type: Default::default(),
             flipped: false,
@@ -48,7 +60,8 @@ impl Default for Line {
 
 impl PartialEq for Line {
     fn eq(&self, other: &Self) -> bool {
-        self.ends == other.ends
+        self.id == other.id
+            && self.ends == other.ends
             && self.line_type == other.line_type
             && self.flipped == other.flipped
     }
@@ -56,6 +69,7 @@ impl PartialEq for Line {
 
 impl Hash for Line {
     fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
         self.ends.hash(state);
         self.line_type.hash(state);
         self.flipped.hash(state);
@@ -71,6 +85,10 @@ pub struct LineBuilder {
 }
 
 impl LineBuilder {
+    pub fn id(mut self, id: i64) -> LineBuilder {
+        self.line.id = id;
+        self
+    }
     pub fn extension_ratio(mut self, extension_ratio: f64) -> LineBuilder {
         self.line.extension_ratio = extension_ratio;
         self
