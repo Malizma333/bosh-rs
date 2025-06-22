@@ -191,16 +191,17 @@ impl Iterator for GridIndexLineIter {
 
             let x_until_hit =
                 self.cell_size - f64_rem_floor(self.current_point.0, self.cell_size);
-            let y_until_hit = if self.slope >= 0.0 {
-                self.cell_size - f64_rem_floor(self.current_point.1, self.cell_size)
-            } else {
-                let result = f64_rem_floor(self.current_point.1, self.cell_size);
-                if result != 0.0 {
-                    result
+            let y_until_hit =
+                if self.slope >= 0.0 {
+                    self.cell_size - f64_rem_floor(self.current_point.1, self.cell_size)
                 } else {
-                    self.cell_size
-                }
-            };
+                    let result = f64_rem_floor(self.current_point.1, self.cell_size);
+                    if result != 0.0 {
+                        result
+                    } else {
+                        self.cell_size
+                    }
+                };
 
             let x_until_vert_border = x_until_hit;
             let x_until_horiz_border = y_until_hit / self.slope.abs();
@@ -235,8 +236,8 @@ impl Iterator for GridIndexLineIter {
 fn f64_rem_floor(a: f64, b: f64) -> f64 {
     let mut result = a.rem_euclid(b);
 
-    if result < 0.0 {
-        result += b;
+    if result == b {
+        result -= b;
     }
 
     result

@@ -275,4 +275,18 @@ mod tests {
         let near = grid.lines_near(Vector2D(0.5, 0.5), 1);
         assert_eq!(near, lines.iter().collect::<Vec<_>>());
     }
+
+    #[test]
+    fn does_not_infinite_loop_lol() {
+        Grid::new(
+            vec![
+                Line::builder()
+                    .point(-1.9499999999999889, 21.950000000000003)
+                    .point(18.05000000000001, 20.700000000000003)
+                    .extended(true)
+                    .build(),
+            ],
+            DEFAULT_CELL_SIZE,
+        );
+    }
 }
