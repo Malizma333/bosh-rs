@@ -24,3 +24,5 @@ serde = { version = "1", features = ["derive"] }
 anyhow = "1"
 read-from = "0.5"
 
+[dev-dependencies]
+lr_formatter_rs = { path = "../lr-formatter-rs" }
