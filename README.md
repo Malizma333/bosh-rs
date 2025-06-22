@@ -1,6 +1,9 @@
 
 # bosh-rs
 
+> [!WARNING]
+> This package is now maintained at https://codeberg.org/lipfang/bosh-rs
+
 bosh-rs is a highly configurable physics engine for the game Line Rider.
 
 A frontend for bosh-rs can be found at [bosh]. The official implementation
