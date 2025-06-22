@@ -1,6 +1,6 @@
 [package]
 name = "bosh-rs"
-version = "0.4.2"
+version = "0.4.3"
 edition = "2021"
 authors = ["lipfang"]
 description = "A highly customizable physics engine for the game Line Rider"
