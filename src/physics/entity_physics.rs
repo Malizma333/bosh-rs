@@ -19,7 +19,7 @@ impl PhysicsEntity {
         let mut broken = false;
         for (i, bone) in self.bones.clone().iter().enumerate() {
             if DEBUG_PRINT { println!("Subiteration {}", i); }
-            if let Some((next_p1, next_p2)) = next_bone_locations(&bone, &self) {
+            if let Some((next_p1, next_p2)) = next_bone_locations(&bone, &self, broken) {
                 self.point_at_mut(bone.p1).location = next_p1;
                 self.point_at_mut(bone.p2).location = next_p2;
                 if DEBUG_PRINT { print_points(self.clone()); }
