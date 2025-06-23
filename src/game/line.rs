@@ -7,7 +7,9 @@ use crate::game::vector::Vector2D;
 #[derive(Copy, Clone, Hash, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub enum LineType {
     Normal,
+    // Suggestion: Acceleration amounts from linerider.com are f64 values
     Accelerate { amount: u64 },
+    // Suggestion: Not pertinent to physics, but scenery lines can have f64 width values
     Scenery,
 }
 
