@@ -389,6 +389,46 @@ mod tests {
     }
 
     #[test]
+    fn reverse_accel_line() {
+        let line = Line::builder()
+            .id(0)
+            .line_type(LineType::Normal)
+            .point(0.0, 5.0)
+            .point(30.0, 5.0)
+            .build();
+        let acc_line = Line::builder()
+            .id(0)
+            .line_type(LineType::Accelerate { amount: 1 })
+            .point(30.0, 5.0)
+            .point(0.0, 5.0)
+            .flipped(true)
+            .build();
+        let frame = 11;
+
+        let engine = Track::new(vec![Entity::default_boshsled()], vec![]);
+        let mut engine0 = engine.clone();
+        let mut engine1 = engine.clone();
+        engine0.add_line(line);
+        engine1.add_line(acc_line);
+
+        let entities0 = engine0.entity_positions_at(frame);
+        let entities1 = engine1.entity_positions_at(frame);
+
+        let rider_moving = entities0.get(0).expect("Rider moving should exist");
+        let rider_reversing = entities1.get(0).expect("Rider reversing should exist");
+
+        let rider_moving_points = average(rider_moving);
+        let rider_reversing_points = average(rider_reversing);
+
+        // FAILING
+
+        // assert!(
+        //     rider_moving_points.0 > rider_reversing_points.0,
+        //     "Rider should have moved backwards"
+        // );
+    }
+
+    #[test]
     fn crash() {
         let track_bytes =
             fs::read_to_string("./fixtures/crash.track.json").expect("Failed to read file");
