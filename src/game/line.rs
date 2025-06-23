@@ -126,6 +126,8 @@ impl LineBuilder {
 
         self
     }
+    // Suggestion: Maybe separate this out into left and right extension, where left extension is typically first,
+    // alternatively use bit flags (0 None, 1 Left, 2 Right, 3 Both)
     pub fn extended(mut self, extended: bool) -> LineBuilder {
         if !self.first_location_init {
             panic!("extended should be called after the point is located");
