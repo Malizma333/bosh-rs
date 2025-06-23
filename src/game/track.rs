@@ -241,7 +241,7 @@ mod tests {
     #[test]
     fn one_line() {
         let y = 5.0;
-        let line = &Line::builder()
+        let line = Line::builder()
             .id(0)
             .line_type(LineType::Normal)
             .point(0.0, 5.0)
@@ -251,7 +251,7 @@ mod tests {
 
         let engine0 = Track::new(vec![Entity::default_boshsled()], vec![]);
         let mut engine1 = engine0.clone();
-        engine1.add_line(*line);
+        engine1.add_line(line);
 
         let entities0 = engine0.entity_positions_at(frame);
         let entities1 = engine1.entity_positions_at(frame);
@@ -319,6 +319,35 @@ mod tests {
                 && butt.location.0 > 0.0
                 && shoulder.location.0 > butt.location.0,
             "Rider should be sitting and leaning forward"
+        );
+    }
+
+    #[test]
+    fn scenery_line() {
+        let line = Line::builder()
+            .id(0)
+            .line_type(LineType::Scenery)
+            .point(0.0, 5.0)
+            .point(30.0, 5.0)
+            .build();
+        let frame = 11;
+
+        let engine0 = Track::new(vec![Entity::default_boshsled()], vec![]);
+        let mut engine1 = engine0.clone();
+        engine1.add_line(line);
+
+        let entities0 = engine0.entity_positions_at(frame);
+        let entities1 = engine1.entity_positions_at(frame);
+
+        let rider_falling = entities0.get(0).expect("Rider falling should exist");
+        let rider_colliding = entities1.get(0).expect("Rider colliding should exist");
+
+        let rider_falling_points = average(rider_falling);
+        let rider_colliding_points = average(rider_colliding);
+
+        assert!(
+            rider_colliding_points.1 == rider_falling_points.1,
+            "Rider should not have collided with line"
         );
     }
 
